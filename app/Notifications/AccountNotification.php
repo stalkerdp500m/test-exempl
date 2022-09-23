@@ -6,19 +6,22 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
-class AccountNotification extends Notification
+class AccountNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public $masage;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($masage)
     {
-        //
+        $this->masage = $masage;
     }
 
     /**
@@ -29,33 +32,13 @@ class AccountNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return [LogChanel::class];
+        return view('accounts');
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
+    public function toLog($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
+        sleep(10); //имитация задержки
+        Log::info("$notifiable: $this->masage");
     }
 }
